@@ -11,7 +11,7 @@ export const register =async(req,res)=>{
     }
     try{
         // check the existing user 
-        const existingUser=await userModel.find({email})
+        const existingUser=await userModel.findOne({email})
         if(existingUser){
             return res.json({success:false, message: " User already exists"})
         }
@@ -87,7 +87,7 @@ export const logout= async(req,res)=>{
             secure:process.env.NODE_ENV==='production', // false
             sameSite:process.env.NODE_ENV==='production' ? 'none': 'strict',
         })
-        
+
         return res.json({success:true, message: "Logged Out"})
     } catch (error) {
         return res.json({success:false, message: error.message})
