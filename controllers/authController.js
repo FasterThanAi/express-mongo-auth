@@ -33,10 +33,48 @@ export const register =async(req,res)=>{
             sameSite:process.env.NODE_ENV==='production' ? 'none': 'strict',
             maxAge:7 * 24 * 60 * 60 * 1000 // 7days expire time for cookies 
 
-        })
+
+        });
+        return res.json({success:true})
+
     } catch(error){
         res.json({success: false , message:error.message})
     }
 }
 
 
+export const login= async(req,res)=>{
+    const{emial,password}=req.body;
+
+    if(!email|| !password){
+        return res.json({success:false,message:'Email and password are required'})
+    }
+    try{
+        // if user is avialble
+        const user=await userModel.findOne({email})
+
+        if(!user){
+            return res.json({success:false, message:'Invalid email'})
+        }
+
+        const isMatch=await bcrypt.compare(password, user.password)
+        // suppose user exist in db then check the password 
+        if(!isMatch){
+            return res.json({success:false, message:'Invalid password '})
+        }
+        // generate token 
+        const token= jwt.sign({id:user._id},process.env.JWT_SECRET, {expiresIn:'7d'});
+
+        // send this token to user in response 
+        res.cookie('token',token,{
+            httpOnly:true,
+            secure:process.env.NODE_ENV==='production', // false
+            sameSite:process.env.NODE_ENV==='production' ? 'none': 'strict',
+            maxAge:7 * 24 * 60 * 60 * 1000 // 7days expire time for cookies 
+
+        });
+        return res.json({success:true})
+    } catch(error){
+        return res.json({success:false,message: error.message})
+    }
+}
