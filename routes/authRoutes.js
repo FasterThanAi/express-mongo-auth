@@ -5,6 +5,6 @@ const authRouter= express.Router();
 
 authRouter.post('/register',register ) // controller func register
 authRouter.post('/login',login ) // controller func login
-authRouter.post('/login',logout ) // controller func logout
+authRouter.post('/logout',logout ) // controller func logout
 
 export default authRouter

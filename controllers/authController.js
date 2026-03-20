@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import userModel from '../models/userModel.js'
+import transporter from '../config/nodemailer.js'
 
 export const register =async(req,res)=>{
     
@@ -35,6 +36,15 @@ export const register =async(req,res)=>{
 
 
         });
+        // sending welcome email 
+        const mailOptions={
+            from: process.env.SENDER_EMAIL,
+            to:email,
+            subject:'Welcome, Thanks for Register ',
+            text:`so this authentication system built by Priyanshu kumar .
+            your account has been created using ${email}`
+        }
+        await transporter.sendMail(mailOptions) // send the email 
         return res.json({success:true})
 
     } catch(error){
@@ -44,7 +54,7 @@ export const register =async(req,res)=>{
 
 
 export const login= async(req,res)=>{
-    const{emial,password}=req.body;
+    const{email,password}=req.body;
 
     if(!email|| !password){
         return res.json({success:false,message:'Email and password are required'})
